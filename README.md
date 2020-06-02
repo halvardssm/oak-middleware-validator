@@ -2,6 +2,7 @@
 
 ![CI](https://github.com/halvardssm/oak-middleware-validator/workflows/CI/badge.svg)
 [![(Deno)](https://img.shields.io/badge/deno-1.0.3-green.svg)](https://deno.land)
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts)
 
 Oak middleware for parameter and body validator
 
