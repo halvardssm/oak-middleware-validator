@@ -11,7 +11,7 @@ Oak middleware for parameter and body validator
 * As a router middleware
 
   ```ts
-  import { sanitizerMiddleware, validatorMiddlewareOptions } from "https://raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts"
+  import { validatorMiddleware, validatorMiddlewareOptions } from "https://raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts"
   import { RouterMiddleware } from "https://deno.land/x/oak/mod.ts";
   
   const router = new Router();
