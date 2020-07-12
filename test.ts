@@ -118,6 +118,19 @@ const tests = [
     },
   },
   {
+    name: "Success body type",
+    async fn() {
+      const mw = validatorMiddleware({
+        validations: [
+          { key: "a", validationOption: "string" },
+        ],
+        bodyType: "json",
+      });
+
+      await mw(mockContext({}, JSON.stringify({ a: "b" })), mockNext);
+    },
+  },
+  {
     name: "Success body JSON",
     async fn() {
       const mw = validatorMiddleware({
@@ -247,6 +260,27 @@ const tests = [
         async () => await mw(mockContext({}), mockNext),
         httpErrors.UnprocessableEntity,
         "No body was provided;",
+      );
+    },
+  },
+  {
+    name: "Throws invalid body",
+    async fn() {
+      const mw = validatorMiddleware({
+        validations: [
+          { key: "a", validationOption: "string" },
+        ],
+        bodyType: "json",
+      });
+
+      assertThrowsAsync(
+        async () =>
+          await mw(
+            mockContext({}, "a=b", "application/x-www-form-urlencoded"),
+            mockNext,
+          ),
+        httpErrors.UnprocessableEntity,
+        "Invalid body type; Value: form; Should Be: json;",
       );
     },
   },

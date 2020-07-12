@@ -11,14 +11,14 @@ Oak middleware for parameter and body validator
 * As a router middleware
 
   ```ts
-  import { validatorMiddleware, validatorMiddlewareOptions } from "https://raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts"
+  import { validatorMiddleware, ValidatorMiddlewareOptions } from "https://raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts"
   import { RouterMiddleware } from "https://deno.land/x/oak/mod.ts";
   
   const router = new Router();
   
   const app = new Application();
 
-  const options: validatorMiddlewareOptions = {
+  const options: ValidatorMiddlewareOptions = {
     validations: [
       { key: "a", validationOption: "string", isUrlParam: true },
       { key: "b", validationOption: "b", isOptional: true },
@@ -41,20 +41,22 @@ Oak middleware for parameter and body validator
 
 ## Options
 
-* validations: validationT[]; // Array of validations
+* validations: ValidationT[]; // Array of validations
 * bodyRequired?: boolean; // If true, will return error if body is empty
-* errorMessages?: Partial<errorMessagesT>; // Customize your own error messages
+* bodyType?: BodyType; // Will validate the body against a provided body type
+* errorMessages?: Partial<ErrorMessagesT>; // Customize your own error messages
 
 ### validationT
 
 * key: string; // The key
-* validationOption: validationFn | string; // The validation function, also accepts a `typeof` or a string to compare strings
+* validationOption: ValidationFn | string; // The validation function, also accepts a `typeof` or a string to compare strings
 * isOptional?: boolean; // Will allow the key to be missing
 * isUrlParam?: boolean; // Will check the url instead of the body
 
 ### errorMessagesT
 
 * ERROR_NO_BODY: "No body was provided",
+* ERROR_INVALID_BODY: "Invalid body type",
 * ERROR_MISSING_REQUIRED: "No value was provided",
 * ERROR_VALIDATION_FAILED: "Validation failed",
 * ERROR_NOT_IN_ARRAY: "Value not in array",
@@ -67,9 +69,9 @@ Oak middleware for parameter and body validator
 (
   key: string, // The key
   value: string | Uint8Array, // The value
-  validationError: validationErrorFn, // The validation error callback
-  errorMessages: errorMessagesT, // Exposes the error messages
-  options: validatorMiddlewareOptions // Exposes the options
+  validationError: ValidationErrorFn, // The validation error callback
+  errorMessages: ErrorMessagesT, // Exposes the error messages
+  options: ValidatorMiddlewareOptions // Exposes the options
 ) => void
 ```
 

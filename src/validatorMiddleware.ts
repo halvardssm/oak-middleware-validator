@@ -1,4 +1,4 @@
-import { RouterMiddleware, ErrorStatus } from "../deps.ts";
+import { RouterMiddleware, ErrorStatus, BodyType } from "../deps.ts";
 
 export type ValidationFn = (
   key: string,
@@ -25,11 +25,13 @@ export type ValidationT = {
 export type ValidatorMiddlewareOptions = {
   validations: ValidationT[];
   bodyRequired?: boolean;
+  bodyType?: BodyType;
   errorMessages?: Partial<ErrorMessagesT>;
 };
 
 export type ErrorKeys =
   | "ERROR_NO_BODY"
+  | "ERROR_INVALID_BODY"
   | "ERROR_MISSING_REQUIRED"
   | "ERROR_VALIDATION_FAILED"
   | "ERROR_NOT_IN_ARRAY"
@@ -44,6 +46,7 @@ export interface JsonT {
 
 export const errors: ErrorMessagesT = {
   ERROR_NO_BODY: "No body was provided",
+  ERROR_INVALID_BODY: "Invalid body type",
   ERROR_MISSING_REQUIRED: "No value was provided",
   ERROR_VALIDATION_FAILED: "Validation failed",
   ERROR_NOT_IN_ARRAY: "Value not in array",
@@ -137,13 +140,26 @@ export const validatorMiddleware = (options: ValidatorMiddlewareOptions) => {
       ctx.throw(
         ErrorStatus.UnprocessableEntity,
         message +
-        `;${key ? ` Key: ${key};` : ""}${value ? ` Value: ${value};` : ""}${
-        shouldBe ? ` Should Be: ${shouldBe};` : ""
-        }`,
+          `;${key ? ` Key: ${key};` : ""}${value ? ` Value: ${value};` : ""}${
+            shouldBe ? ` Should Be: ${shouldBe};` : ""
+          }`,
       );
 
     if (options.bodyRequired && !ctx.request.hasBody) {
       validationError(errors.ERROR_NO_BODY);
+    }
+
+    const body = await ctx.request.body();
+
+    if (
+      ctx.request.hasBody && options.bodyType && body.type !== options.bodyType
+    ) {
+      validationError(
+        errors.ERROR_INVALID_BODY,
+        undefined,
+        body.type,
+        options.bodyType,
+      );
     }
 
     for await (const valEl of options.validations) {
