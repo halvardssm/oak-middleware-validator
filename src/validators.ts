@@ -1,9 +1,9 @@
-import { validationFn, errorMessagesT } from "./validatorMiddleware.ts";
+import { ValidationFn, ErrorMessagesT } from "./validatorMiddleware.ts";
 const decoder = new TextDecoder();
 
 /** Validates if a string is in the array */
-export const validateStringInArray = (...values: string[]): validationFn => {
-  return (key, value, throws, errorMessages: errorMessagesT) => {
+export const validateStringInArray = (...values: string[]): ValidationFn => {
+  return (key, value, throws, errorMessages: ErrorMessagesT) => {
     if (Array.isArray(value)) value = decoder.decode(value as Uint8Array);
 
     if (!values.includes(value as string)) {
@@ -19,8 +19,8 @@ export const validateIsNumber = (
   min?: number,
   max?: number,
   radix?: number,
-): validationFn => {
-  return (key, value, throws, errorMessages: errorMessagesT) => {
+): ValidationFn => {
+  return (key, value, throws, errorMessages: ErrorMessagesT) => {
     if (Array.isArray(value)) value = decoder.decode(value as Uint8Array);
 
     const parsedVal = parseInt(value as string, radix);

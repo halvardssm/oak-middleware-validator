@@ -1,49 +1,52 @@
-import { RouterMiddleware, ErrorStatus } from "../deps.ts";
+import { RouterMiddleware, ErrorStatus, BodyType } from "../deps.ts";
 
-export type validationFn = (
+export type ValidationFn = (
   key: string,
   value: string | Uint8Array,
-  validationError: validationErrorFn,
-  errorMessages: errorMessagesT,
-  options: validatorMiddlewareOptions,
+  validationError: ValidationErrorFn,
+  errorMessages: ErrorMessagesT,
+  options: ValidatorMiddlewareOptions,
 ) => void;
 
-export type validationErrorFn = (
+export type ValidationErrorFn = (
   message: string,
   key?: string,
   value?: any,
   shouldBe?: any,
 ) => never;
 
-export type validationT = {
+export type ValidationT = {
   key: string;
-  validationOption: validationFn | string;
+  validationOption: ValidationFn | string;
   isOptional?: boolean;
   isUrlParam?: boolean;
 };
 
-export type validatorMiddlewareOptions = {
-  validations: validationT[];
+export type ValidatorMiddlewareOptions = {
+  validations: ValidationT[];
   bodyRequired?: boolean;
-  errorMessages?: Partial<errorMessagesT>;
+  bodyType?: BodyType;
+  errorMessages?: Partial<ErrorMessagesT>;
 };
 
-export type errorKeys =
+export type ErrorKeys =
   | "ERROR_NO_BODY"
+  | "ERROR_INVALID_BODY"
   | "ERROR_MISSING_REQUIRED"
   | "ERROR_VALIDATION_FAILED"
   | "ERROR_NOT_IN_ARRAY"
   | "ERROR_NUMBER_MIN"
   | "ERROR_NUMBER_MAX";
 
-export type errorMessagesT = Record<errorKeys, string>;
+export type ErrorMessagesT = Record<ErrorKeys, string>;
 
 export interface JsonT {
   [key: string]: string | undefined; //| JsonT
 }
 
-export const errors: errorMessagesT = {
+export const errors: ErrorMessagesT = {
   ERROR_NO_BODY: "No body was provided",
+  ERROR_INVALID_BODY: "Invalid body type",
   ERROR_MISSING_REQUIRED: "No value was provided",
   ERROR_VALIDATION_FAILED: "Validation failed",
   ERROR_NOT_IN_ARRAY: "Value not in array",
@@ -52,11 +55,11 @@ export const errors: errorMessagesT = {
 };
 
 /** Validatior middleware */
-export const validatorMiddleware = (options: validatorMiddlewareOptions) => {
+export const validatorMiddleware = (options: ValidatorMiddlewareOptions) => {
   Object.assign(errors, options.errorMessages);
 
   const core: RouterMiddleware = async (ctx, next) => {
-    const validateElement = (valEl: validationT, element?: string) => {
+    const validateElement = (valEl: ValidationT, element?: string) => {
       if (element) {
         if (typeof valEl.validationOption === "function") {
           valEl.validationOption(
@@ -84,7 +87,7 @@ export const validatorMiddleware = (options: validatorMiddlewareOptions) => {
       }
     };
 
-    const validateBody = async (valEl: validationT) => {
+    const validateBody = async (valEl: ValidationT) => {
       const validateForm = (body: URLSearchParams) => {
         if (body.has(valEl.key)) {
           const values = body.getAll(valEl.key);
@@ -128,7 +131,7 @@ export const validatorMiddleware = (options: validatorMiddlewareOptions) => {
       }
     };
 
-    const validationError: validationErrorFn = (
+    const validationError: ValidationErrorFn = (
       message,
       key,
       value,
@@ -144,6 +147,19 @@ export const validatorMiddleware = (options: validatorMiddlewareOptions) => {
 
     if (options.bodyRequired && !ctx.request.hasBody) {
       validationError(errors.ERROR_NO_BODY);
+    }
+
+    const body = await ctx.request.body();
+
+    if (
+      ctx.request.hasBody && options.bodyType && body.type !== options.bodyType
+    ) {
+      validationError(
+        errors.ERROR_INVALID_BODY,
+        undefined,
+        body.type,
+        options.bodyType,
+      );
     }
 
     for await (const valEl of options.validations) {
