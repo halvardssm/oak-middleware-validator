@@ -1,7 +1,8 @@
 # Oak Middleware Validator
 
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/halvardssm/oak-middleware-validator/ci/master?style=flat-square&logo=github)](https://github.com/halvardssm/oak-middleware-validator/actions?query=branch%3Amaster+workflow%3ACI)
-[![(Deno)](https://img.shields.io/badge/deno-v1.1.3-green.svg?style=flat-square&logo=deno)](https://deno.land)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/halvardssm/oak-middleware-validator/CI/master?style=flat-square&logo=github)](https://github.com/halvardssm/oak-middleware-validator/actions?query=branch%3Amaster+workflow%3ACI)
+[![(Deno)](https://img.shields.io/badge/deno-v1.2.0-green.svg?style=flat-square&logo=deno)](https://deno.land)
+[![(Deno)](https://img.shields.io/badge/oak-v6.0.1-orange.svg?style=flat-square&logo=deno)](https://deno.land)
 [![deno doc](https://img.shields.io/badge/deno-doc-blue.svg?style=flat-square&logo=deno)](https://doc.deno.land/https/raw.githubusercontent.com/halvardssm/oak-middleware-validator/master/mod.ts)
 
 Oak middleware for parameter and body validator

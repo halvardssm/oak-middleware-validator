@@ -1,11 +1,12 @@
-export { ServerRequest } from "https://deno.land/std@0.51.0/http/server.ts";
-export { assertThrowsAsync } from "https://deno.land/std@0.54.0/testing/asserts.ts";
-export { createHttpError } from "https://deno.land/x/oak@v4.0.0/httpError.ts";
+export { ServerRequest } from "https://deno.land/std@0.61.0/http/server.ts";
+export { assertThrowsAsync } from "https://deno.land/std@0.61.0/testing/asserts.ts";
+export { createHttpError } from "https://deno.land/x/oak@v6.0.1/httpError.ts";
 export {
   RouterContext,
   RouterMiddleware,
   httpErrors,
   Request,
   BodyType,
-} from "https://deno.land/x/oak@v4.0.0/mod.ts";
-export { ErrorStatus } from "https://deno.land/x/oak@v4.0.0/types.ts";
+  Status,
+  FormDataReader,
+} from "https://deno.land/x/oak@v6.0.1/mod.ts";

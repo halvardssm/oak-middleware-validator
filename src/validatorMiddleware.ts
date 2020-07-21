@@ -1,8 +1,7 @@
-import { RouterMiddleware, ErrorStatus, BodyType } from "../deps.ts";
-
+import { RouterMiddleware, Status, BodyType, FormDataReader } from "../deps.ts";
 export type ValidationFn = (
   key: string,
-  value: string | Uint8Array,
+  value: string | Uint8Array | FormDataReader,
   validationError: ValidationErrorFn,
   errorMessages: ErrorMessagesT,
   options: ValidatorMiddlewareOptions,
@@ -105,14 +104,14 @@ export const validatorMiddleware = (options: ValidatorMiddlewareOptions) => {
         validateElement(valEl, value);
       };
 
-      const body = await ctx.request.body();
+      const body = ctx.request.body();
       console.log;
       switch (body.type) {
         case "form":
-          validateForm(body.value);
+          validateForm(await body.value);
           break;
         case "json":
-          validateJson(body.value);
+          validateJson(await body.value);
           break;
         default:
           if (!body.value && options.bodyRequired) {
@@ -122,7 +121,7 @@ export const validatorMiddleware = (options: ValidatorMiddlewareOptions) => {
           ) {
             valEl.validationOption(
               valEl.key,
-              body.value,
+              await body.value,
               validationError,
               errors,
               options,
@@ -138,7 +137,7 @@ export const validatorMiddleware = (options: ValidatorMiddlewareOptions) => {
       shouldBe,
     ) =>
       ctx.throw(
-        ErrorStatus.UnprocessableEntity,
+        Status.UnprocessableEntity,
         message +
           `;${key ? ` Key: ${key};` : ""}${value ? ` Value: ${value};` : ""}${
             shouldBe ? ` Should Be: ${shouldBe};` : ""
